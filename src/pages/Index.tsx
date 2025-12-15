@@ -88,8 +88,12 @@ const Index = () => {
           </p>
         </header>
 
-        <Tabs defaultValue="gallery" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-8 h-auto gap-2">
+        <Tabs defaultValue="about" className="w-full">
+          <TabsList className="grid w-full grid-cols-5 mb-8 h-auto gap-2">
+            <TabsTrigger value="about" className="flex items-center gap-2 py-3 rounded-2xl">
+              <Icon name="User" size={20} />
+              <span className="hidden sm:inline">О воспитателе</span>
+            </TabsTrigger>
             <TabsTrigger value="gallery" className="flex items-center gap-2 py-3 rounded-2xl">
               <Icon name="Image" size={20} />
               <span className="hidden sm:inline">Галерея</span>
@@ -107,6 +111,70 @@ const Index = () => {
               <span className="hidden sm:inline">Опрос</span>
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="about" className="animate-fade-in">
+            <Card className="max-w-4xl mx-auto rounded-3xl border-2">
+              <CardContent className="pt-8">
+                <div className="flex flex-col md:flex-row gap-8 items-start">
+                  <div className="w-48 h-48 rounded-3xl overflow-hidden border-4 border-primary shadow-lg flex-shrink-0 mx-auto md:mx-0">
+                    <img 
+                      src="https://cdn.poehali.dev/projects/72856814-469f-431a-a44e-d47166687aaa/files/73103622-ba46-4c76-a8a7-7cb5e79db51d.jpg" 
+                      alt="Искендерова Татьяна Дмитриевна" 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="flex-1 space-y-6">
+                    <div>
+                      <h2 className="text-3xl font-bold text-foreground mb-2">Искендерова Татьяна Дмитриевна</h2>
+                      <p className="text-xl text-primary font-semibold">Воспитатель дошкольной группы</p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 bg-secondary/50 rounded-xl mt-1">
+                          <Icon name="GraduationCap" size={24} className="text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-lg mb-1">Образование</h3>
+                          <p className="text-muted-foreground">Высшее педагогическое образование по специальности «Дошкольная педагогика и психология»</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 bg-secondary/50 rounded-xl mt-1">
+                          <Icon name="Briefcase" size={24} className="text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-lg mb-1">Опыт работы</h3>
+                          <p className="text-muted-foreground">Более 15 лет работы с детьми дошкольного возраста. Постоянное повышение квалификации и участие в педагогических семинарах.</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 bg-secondary/50 rounded-xl mt-1">
+                          <Icon name="Heart" size={24} className="text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-lg mb-1">Подход к работе</h3>
+                          <p className="text-muted-foreground">Индивидуальный подход к каждому ребёнку, создание атмосферы доверия и безопасности. Активное вовлечение родителей в образовательный процесс.</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 bg-secondary/50 rounded-xl mt-1">
+                          <Icon name="Award" size={24} className="text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-lg mb-1">Достижения</h3>
+                          <p className="text-muted-foreground">Благодарственные письма от родителей, победитель конкурса «Лучший воспитатель года», автор методических разработок по развитию детей.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="gallery" className="animate-fade-in">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
