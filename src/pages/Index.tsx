@@ -126,7 +126,7 @@ const Index = () => {
                   <div className="flex-1 space-y-6">
                     <div>
                       <h2 className="text-3xl font-bold text-foreground mb-2">Искендерова Татьяна Дмитриевна</h2>
-                      <p className="text-xl text-primary font-semibold">Воспитатель дошкольной группы</p>
+                      <p className="text-xl text-primary font-semibold">Воспитатель высшей квалификационной категории</p>
                     </div>
                     
                     <div className="space-y-4">
@@ -136,7 +136,7 @@ const Index = () => {
                         </div>
                         <div>
                           <h3 className="font-semibold text-lg mb-1">Образование</h3>
-                          <p className="text-muted-foreground">Высшее педагогическое образование по специальности «Дошкольная педагогика и психология»</p>
+                          <p className="text-muted-foreground">Высшее педагогическое</p>
                         </div>
                       </div>
                       
@@ -145,8 +145,8 @@ const Index = () => {
                           <Icon name="Briefcase" size={24} className="text-primary" />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-lg mb-1">Опыт работы</h3>
-                          <p className="text-muted-foreground">Более 15 лет работы с детьми дошкольного возраста. Постоянное повышение квалификации и участие в педагогических семинарах.</p>
+                          <h3 className="font-semibold text-lg mb-1">Стаж работы</h3>
+                          <p className="text-muted-foreground">9 лет работы с детьми дошкольного возраста</p>
                         </div>
                       </div>
                       
@@ -165,8 +165,8 @@ const Index = () => {
                           <Icon name="Award" size={24} className="text-primary" />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-lg mb-1">Достижения</h3>
-                          <p className="text-muted-foreground">Благодарственные письма от родителей, победитель конкурса «Лучший воспитатель года», автор методических разработок по развитию детей.</p>
+                          <h3 className="font-semibold text-lg mb-1">Квалификация</h3>
+                          <p className="text-muted-foreground">Высшая квалификационная категория. Постоянное повышение квалификации и участие в профессиональных конкурсах и семинарах.</p>
                         </div>
                       </div>
                     </div>
