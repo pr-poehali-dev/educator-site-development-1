@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -6,19 +6,145 @@ import { Badge } from '@/components/ui/badge';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { useToast } from '@/hooks/use-toast';
 import Icon from '@/components/ui/icon';
 
+const GALLERY_API = 'https://functions.poehali.dev/ed774d34-7bc6-4846-8fbf-260121773d7b';
+
 const Index = () => {
+  const { toast } = useToast();
   const [selectedQuiz, setSelectedQuiz] = useState<number | null>(null);
   const [quizAnswer, setQuizAnswer] = useState('');
   const [pollAnswer, setPollAnswer] = useState('');
   const [pollComment, setPollComment] = useState('');
+  const [gallery, setGallery] = useState<Array<{id: number, title: string, image_url: string}>>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminPassword, setAdminPassword] = useState('');
+  const [showAdminDialog, setShowAdminDialog] = useState(false);
+  const [showUploadDialog, setShowUploadDialog] = useState(false);
+  const [newPhotoTitle, setNewPhotoTitle] = useState('');
+  const [newPhotoFile, setNewPhotoFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
-  const gallery = [
-    { id: 1, title: 'Праздник осени', image: 'https://cdn.poehali.dev/projects/72856814-469f-431a-a44e-d47166687aaa/files/b2d7bb03-cd79-400a-b102-d2ff9915adf2.jpg' },
-    { id: 2, title: 'Творческие занятия', image: 'https://cdn.poehali.dev/projects/72856814-469f-431a-a44e-d47166687aaa/files/d4657625-b19f-4dde-aac9-13e8e04f9b2f.jpg' },
-    { id: 3, title: 'День рождения', image: 'https://cdn.poehali.dev/projects/72856814-469f-431a-a44e-d47166687aaa/files/b2d7bb03-cd79-400a-b102-d2ff9915adf2.jpg' },
-  ];
+  useEffect(() => {
+    loadGallery();
+  }, []);
+
+  const loadGallery = async () => {
+    try {
+      const response = await fetch(GALLERY_API);
+      const data = await response.json();
+      setGallery(data.photos || []);
+    } catch (error) {
+      console.error('Ошибка загрузки галереи:', error);
+    }
+  };
+
+  const handleAdminLogin = () => {
+    if (adminPassword === 'admin2024') {
+      setIsAdmin(true);
+      setShowAdminDialog(false);
+      toast({
+        title: '✅ Успешный вход',
+        description: 'Вы вошли в режим администратора'
+      });
+    } else {
+      toast({
+        title: '❌ Ошибка',
+        description: 'Неверный пароль',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const handlePhotoUpload = async () => {
+    if (!newPhotoTitle || !newPhotoFile) {
+      toast({
+        title: '⚠️ Внимание',
+        description: 'Заполните все поля',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64 = reader.result as string;
+        
+        const response = await fetch(GALLERY_API, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Password': adminPassword
+          },
+          body: JSON.stringify({
+            title: newPhotoTitle,
+            image: base64
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          toast({
+            title: '✅ Успешно',
+            description: 'Фотография добавлена в галерею'
+          });
+          setShowUploadDialog(false);
+          setNewPhotoTitle('');
+          setNewPhotoFile(null);
+          loadGallery();
+        } else {
+          toast({
+            title: '❌ Ошибка',
+            description: data.error || 'Не удалось загрузить фото',
+            variant: 'destructive'
+          });
+        }
+      };
+      reader.readAsDataURL(newPhotoFile);
+    } catch (error) {
+      toast({
+        title: '❌ Ошибка',
+        description: 'Произошла ошибка при загрузке',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handlePhotoDelete = async (photoId: number) => {
+    if (!confirm('Удалить эту фотографию?')) return;
+
+    try {
+      const response = await fetch(`${GALLERY_API}?id=${photoId}`, {
+        method: 'DELETE',
+        headers: {
+          'X-Admin-Password': adminPassword
+        }
+      });
+
+      if (response.ok) {
+        toast({
+          title: '✅ Удалено',
+          description: 'Фотография удалена из галереи'
+        });
+        loadGallery();
+      }
+    } catch (error) {
+      toast({
+        title: '❌ Ошибка',
+        description: 'Не удалось удалить фото',
+        variant: 'destructive'
+      });
+    }
+  };
 
   const recommendations = [
     { id: 1, title: 'Развитие речи в домашних условиях', icon: 'MessageCircle', description: 'Разговаривайте с ребёнком о событиях дня, читайте книги вместе и задавайте вопросы по содержанию. Играйте в словесные игры.' },
@@ -81,8 +207,20 @@ const Index = () => {
               />
             </div>
           </div>
-          <h1 className="text-5xl font-bold text-foreground mb-2">Искендерова Татьяна Дмитриевна</h1>
-          <p className="text-2xl text-primary font-semibold mb-4">Воспитатель</p>
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <h1 className="text-5xl font-bold text-foreground">Искендерова Татьяна Дмитриевна</h1>
+            {!isAdmin && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowAdminDialog(true)}
+                className="hover:bg-primary/10"
+              >
+                <Icon name="Key" size={20} />
+              </Button>
+            )}
+          </div>
+          <p className="text-2xl text-primary font-semibold mb-4">Воспитатель высшей квалификационной категории</p>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Здесь вы найдёте фотографии наших событий, полезные рекомендации и развивающие игры для ваших детей
           </p>
@@ -177,24 +315,85 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="gallery" className="animate-fade-in">
+            {isAdmin && (
+              <div className="mb-6 flex justify-end">
+                <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
+                  <DialogTrigger asChild>
+                    <Button className="rounded-full">
+                      <Icon name="Plus" size={20} className="mr-2" />
+                      Добавить фото
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="rounded-3xl">
+                    <DialogHeader>
+                      <DialogTitle>Загрузить фотографию</DialogTitle>
+                      <DialogDescription>
+                        Добавьте новую фотографию в галерею
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 pt-4">
+                      <div>
+                        <Label htmlFor="photo-title">Название события</Label>
+                        <Input
+                          id="photo-title"
+                          placeholder="Например: Праздник осени"
+                          value={newPhotoTitle}
+                          onChange={(e) => setNewPhotoTitle(e.target.value)}
+                          className="rounded-2xl"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="photo-file">Фотография</Label>
+                        <Input
+                          id="photo-file"
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => setNewPhotoFile(e.target.files?.[0] || null)}
+                          className="rounded-2xl"
+                        />
+                      </div>
+                      <Button
+                        onClick={handlePhotoUpload}
+                        disabled={isUploading}
+                        className="w-full rounded-full"
+                      >
+                        {isUploading ? 'Загрузка...' : 'Загрузить'}
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {gallery.map((item, index) => (
                 <Card 
                   key={item.id} 
-                  className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 rounded-3xl border-2"
+                  className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 rounded-3xl border-2 relative group"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <div className="aspect-video overflow-hidden">
                     <img 
-                      src={item.image} 
+                      src={item.image_url} 
                       alt={item.title}
                       className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Icon name="Camera" size={20} className="text-primary" />
-                      {item.title}
+                    <CardTitle className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <Icon name="Camera" size={20} className="text-primary" />
+                        {item.title}
+                      </div>
+                      {isAdmin && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handlePhotoDelete(item.id)}
+                          className="opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <Icon name="Trash2" size={18} className="text-destructive" />
+                        </Button>
+                      )}
                     </CardTitle>
                   </CardHeader>
                 </Card>
@@ -318,6 +517,37 @@ const Index = () => {
             </Card>
           </TabsContent>
         </Tabs>
+
+        <Dialog open={showAdminDialog} onOpenChange={setShowAdminDialog}>
+          <DialogContent className="rounded-3xl">
+            <DialogHeader>
+              <DialogTitle>Вход для администратора</DialogTitle>
+              <DialogDescription>
+                Введите пароль для доступа к управлению галереей
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 pt-4">
+              <div>
+                <Label htmlFor="admin-password">Пароль</Label>
+                <Input
+                  id="admin-password"
+                  type="password"
+                  placeholder="Введите пароль"
+                  value={adminPassword}
+                  onChange={(e) => setAdminPassword(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleAdminLogin()}
+                  className="rounded-2xl"
+                />
+              </div>
+              <Button
+                onClick={handleAdminLogin}
+                className="w-full rounded-full"
+              >
+                Войти
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

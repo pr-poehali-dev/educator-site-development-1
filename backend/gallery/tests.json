@@ -1,0 +1,25 @@
+{
+  "tests": [
+    {
+      "name": "Get all photos",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "photos": "array"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Upload photo without password",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "title": "Test Photo",
+        "image": "data:image/jpeg;base64,/9j/4AAQSkZJRg=="
+      },
+      "expectedStatus": 403,
+      "bodyMatcher": "partial"
+    }
+  ]
+}
