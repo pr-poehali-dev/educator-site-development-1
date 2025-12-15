@@ -81,7 +81,8 @@ const Index = () => {
               />
             </div>
           </div>
-          <h1 className="text-5xl font-bold text-foreground mb-4">Добро пожаловать в нашу группу!</h1>
+          <h1 className="text-5xl font-bold text-foreground mb-2">Искендерова Татьяна Дмитриевна</h1>
+          <p className="text-2xl text-primary font-semibold mb-4">Воспитатель</p>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Здесь вы найдёте фотографии наших событий, полезные рекомендации и развивающие игры для ваших детей
           </p>
